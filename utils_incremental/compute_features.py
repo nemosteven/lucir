@@ -30,7 +30,7 @@ def compute_features(tg_feature_model, evalloader, num_samples, num_features, de
     #evalset.test_data = input_data.astype('uint8')
     #evalset.test_labels = np.zeros(input_data.shape[0])
     #evalloader = torch.utils.data.DataLoader(evalset, batch_size=128,
-    #    shuffle=False, num_workers=2)
+    #    shuffle=False, num_workers=8)
 
     features = np.zeros([num_samples, num_features])
     start_idx = 0

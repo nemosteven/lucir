@@ -28,11 +28,11 @@ def incremental_train_and_eval(epochs, tg_model, ref_model, tg_optimizer, tg_lr_
     #trainset.train_data = X_train.astype('uint8')
     #trainset.train_labels = Y_train
     #trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
-    #    shuffle=True, num_workers=2)
+    #    shuffle=True, num_workers=8)
     #testset.test_data = X_valid.astype('uint8')
     #testset.test_labels = Y_valid
     #testloader = torch.utils.data.DataLoader(testset, batch_size=100,
-    #    shuffle=False, num_workers=2)
+    #    shuffle=False, num_workers=8)
     #print('Max and Min of train labels: {}, {}'.format(min(Y_train), max(Y_train)))
     #print('Max and Min of valid labels: {}, {}'.format(min(Y_valid), max(Y_valid)))
 

@@ -58,7 +58,7 @@ input_labels = evalset.test_labels
 map_input_labels = np.array([order_list.index(i) for i in input_labels])
 #evalset.test_labels = map_input_labels
 #evalloader = torch.utils.data.DataLoader(evalset, batch_size=128,
-#    shuffle=False, num_workers=2)
+#    shuffle=False, num_workers=8)
 
 cnn_cumul_acc = []
 icarl_cumul_acc = []
@@ -81,7 +81,7 @@ for iteration in range(start_iter, int(100/nb_cl)):
     evalset.test_labels = map_input_labels[indices]
     #print('Max and Min of valid labels: {}, {}'.format(min(evalset.test_labels), max(evalset.test_labels)))
     evalloader = torch.utils.data.DataLoader(evalset, batch_size=128,
-        shuffle=False, num_workers=2)
+        shuffle=False, num_workers=8)
     acc = compute_accuracy(tg_model, tg_feature_model, current_means, evalloader, print_info=False)
     cnn_cumul_acc.append(acc[0])
     icarl_cumul_acc.append(acc[1])

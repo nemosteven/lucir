@@ -29,7 +29,7 @@ def compute_accuracy(tg_model, tg_feature_model, class_means, evalloader, scale=
     #evalset.test_data = input_data.astype('uint8')
     #evalset.test_labels = input_labels
     #evalloader = torch.utils.data.DataLoader(evalset, batch_size=128,
-    #    shuffle=False, num_workers=2)
+    #    shuffle=False, num_workers=8)
 
     correct = 0
     correct_icarl = 0

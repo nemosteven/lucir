@@ -26,7 +26,7 @@ CUDA_VISIBLE_DEVICES=2 python class_incremental_cosine_cifar100.py \
     2>&1 | tee log_seed_1993_rs_ratio_0.0_class_incremental_LFAD_cosine_cifar100_nb_cl_fg_50_nb_cl_10_nb_protos_20.txt
 
 #Cosine Normalization (Mimic Scores) + Less-forget Constraint (Adaptive Loss Weight) + Margin Ranking Loss
-CUDA_VISIBLE_DEVICES=3 python class_incremental_cosine_cifar100.py \
+CUDA_VISIBLE_DEVICES=0 python class_incremental_cosine_cifar100.py \
     --nb_cl_fg 50 --nb_cl 10 --nb_protos 20 \
     --resume --rs_ratio 0.0 --imprint_weights \
     --less_forget --lamda 5 --adapt_lamda \

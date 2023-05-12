@@ -115,11 +115,11 @@ transform_test = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5071,  0.4866,  0.4409), (0.2009,  0.1984,  0.2023)),
 ])
-trainset = torchvision.datasets.CIFAR100(root='./data', train=True,
+trainset = torchvision.datasets.CIFAR100(root='../../data/cifar100', train=True,
                                         download=True, transform=transform_train)
-testset = torchvision.datasets.CIFAR100(root='./data', train=False,
+testset = torchvision.datasets.CIFAR100(root='../../data/cifar100', train=False,
                                        download=True, transform=transform_test)
-evalset = torchvision.datasets.CIFAR100(root='./data', train=False,
+evalset = torchvision.datasets.CIFAR100(root='../../data/cifar100', train=False,
                                        download=False, transform=transform_test)
 
 # Initialization
@@ -127,10 +127,10 @@ dictionary_size     = 500
 top1_acc_list_cumul = np.zeros((int(args.num_classes/args.nb_cl),3,args.nb_runs))
 top1_acc_list_ori   = np.zeros((int(args.num_classes/args.nb_cl),3,args.nb_runs))
 
-X_train_total = np.array(trainset.train_data)
-Y_train_total = np.array(trainset.train_labels)
-X_valid_total = np.array(testset.test_data)
-Y_valid_total = np.array(testset.test_labels)
+X_train_total = np.array(trainset.data)
+Y_train_total = np.array(trainset.targets)
+X_valid_total = np.array(testset.data)
+Y_valid_total = np.array(testset.targets)
 
 # Launch the different runs
 for iteration_total in range(args.nb_runs):
@@ -277,7 +277,7 @@ for iteration_total in range(args.nb_runs):
                 evalset.test_data = X_train[cls_indices].astype('uint8')
                 evalset.test_labels = np.zeros(evalset.test_data.shape[0]) #zero labels
                 evalloader = torch.utils.data.DataLoader(evalset, batch_size=eval_batch_size,
-                    shuffle=False, num_workers=2)
+                    shuffle=False, num_workers=8)
                 num_samples = evalset.test_data.shape[0]
                 cls_features = compute_features(tg_feature_model, evalloader, num_samples, num_features)
                 #cls_features = cls_features.T
@@ -293,8 +293,8 @@ for iteration_total in range(args.nb_runs):
             #torch.save(tg_model, "tg_model_after_imprint_weights.pth")
 
         ############################################################
-        trainset.train_data = X_train.astype('uint8')
-        trainset.train_labels = map_Y_train
+        trainset.data = X_train.astype('uint8')
+        trainset.targets = map_Y_train
         if iteration > start_iter and args.rs_ratio > 0 and scale_factor > 1:
             print("Weights from sampling:", rs_sample_weights)
             index1 = np.where(rs_sample_weights>1)[0]
@@ -302,14 +302,14 @@ for iteration_total in range(args.nb_runs):
             assert((index1==index2).all())
             train_sampler = torch.utils.data.sampler.WeightedRandomSampler(rs_sample_weights, rs_num_samples)
             trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size, \
-                shuffle=False, sampler=train_sampler, num_workers=2)            
+                shuffle=False, sampler=train_sampler, num_workers=8)            
         else:
             trainloader = torch.utils.data.DataLoader(trainset, batch_size=train_batch_size,
-                shuffle=True, num_workers=2)
-        testset.test_data = X_valid_cumul.astype('uint8')
-        testset.test_labels = map_Y_valid_cumul
+                shuffle=True, num_workers=8)
+        testset.data = X_valid_cumul.astype('uint8')
+        testset.targets = map_Y_valid_cumul
         testloader = torch.utils.data.DataLoader(testset, batch_size=test_batch_size,
-            shuffle=False, num_workers=2)
+            shuffle=False, num_workers=8)
         print('Max and Min of train labels: {}, {}'.format(min(map_Y_train), max(map_Y_train)))
         print('Max and Min of valid labels: {}, {}'.format(min(map_Y_valid_cumul), max(map_Y_valid_cumul)))
         ##############################################################
@@ -390,7 +390,7 @@ for iteration_total in range(args.nb_runs):
             evalset.test_data = prototypes[iter_dico].astype('uint8')
             evalset.test_labels = np.zeros(evalset.test_data.shape[0]) #zero labels
             evalloader = torch.utils.data.DataLoader(evalset, batch_size=eval_batch_size,
-                shuffle=False, num_workers=2)
+                shuffle=False, num_workers=8)
             num_samples = evalset.test_data.shape[0]            
             mapped_prototypes = compute_features(tg_feature_model, evalloader, num_samples, num_features)
             D = mapped_prototypes.T
@@ -428,7 +428,7 @@ for iteration_total in range(args.nb_runs):
                 evalset.test_data = prototypes[iteration2*args.nb_cl+iter_dico].astype('uint8')
                 evalset.test_labels = np.zeros(evalset.test_data.shape[0]) #zero labels
                 evalloader = torch.utils.data.DataLoader(evalset, batch_size=eval_batch_size,
-                    shuffle=False, num_workers=2)
+                    shuffle=False, num_workers=8)
                 num_samples = evalset.test_data.shape[0]
                 mapped_prototypes = compute_features(tg_feature_model, evalloader, num_samples, num_features)
                 D = mapped_prototypes.T
@@ -436,7 +436,7 @@ for iteration_total in range(args.nb_runs):
                 # Flipped version also
                 evalset.test_data = prototypes[iteration2*args.nb_cl+iter_dico][:,:,:,::-1].astype('uint8')
                 evalloader = torch.utils.data.DataLoader(evalset, batch_size=eval_batch_size,
-                    shuffle=False, num_workers=2)
+                    shuffle=False, num_workers=8)
                 mapped_prototypes2 = compute_features(tg_feature_model, evalloader, num_samples, num_features)
                 D2 = mapped_prototypes2.T
                 D2 = D2/np.linalg.norm(D2,axis=0)
@@ -466,7 +466,7 @@ for iteration_total in range(args.nb_runs):
         evalset.test_data = X_valid_ori.astype('uint8')
         evalset.test_labels = map_Y_valid_ori
         evalloader = torch.utils.data.DataLoader(evalset, batch_size=eval_batch_size,
-                shuffle=False, num_workers=2)
+                shuffle=False, num_workers=8)
         ori_acc = compute_accuracy(tg_model, tg_feature_model, current_means, evalloader)
         top1_acc_list_ori[iteration, :, iteration_total] = np.array(ori_acc).T
         ##############################################################
@@ -476,7 +476,7 @@ for iteration_total in range(args.nb_runs):
         evalset.test_data = X_valid_cumul.astype('uint8')
         evalset.test_labels = map_Y_valid_cumul
         evalloader = torch.utils.data.DataLoader(evalset, batch_size=eval_batch_size,
-                shuffle=False, num_workers=2)        
+                shuffle=False, num_workers=8)        
         cumul_acc = compute_accuracy(tg_model, tg_feature_model, current_means, evalloader)
         top1_acc_list_cumul[iteration, :, iteration_total] = np.array(cumul_acc).T
         ##############################################################
